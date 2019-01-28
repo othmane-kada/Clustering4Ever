@@ -21,12 +21,16 @@ trait KCommons[V <: GVector[V]] extends ClusteringCommons {
 	/**
 	 *
 	 */
-	protected def obtainNearestCenterID[D <: Distance[V]](v: V, centers: immutable.HashMap[Int, V], metric: D): ClusterID = centers.minBy{ case (clusterID, center) => metric.d(center, v) }._1
+	protected def obtainNearestCenterID[D <: Distance[V]](v: V, centers: immutable.HashMap[Int, V], metric: D): ClusterID = {
+		centers.minBy{ case (clusterID, center) => metric.d(center, v) }._1
+	}
 	/**
 	 * Check if centers move enough
 	 * @return true if every centers move less than epsilon
 	 */
-	protected def areCentersMovingEnough[D <: Distance[V]](kCentersBeforeUpdate: immutable.HashMap[Int, V], centers: immutable.HashMap[Int, V], epsilon: Double, metric: D) = kCentersBeforeUpdate.forall{ case (clusterID, previousCenter) => metric.d(previousCenter, centers(clusterID)) <= epsilon }
+	protected def areCentersNotMovingEnough[D <: Distance[V]](kCentersBeforeUpdate: immutable.HashMap[Int, V], centers: immutable.HashMap[Int, V], epsilon: Double, metric: D) = {
+		kCentersBeforeUpdate.forall{ case (clusterID, previousCenter) => metric.d(previousCenter, centers(clusterID)) <= epsilon }
+	}
 	/**
 	 * Check if there are empty centers and remove them
 	 */
@@ -54,15 +58,7 @@ trait KCommons[V <: GVector[V]] extends ClusteringCommons {
  * @param maxIterations : maximal number of iteration
  * @param metric : a defined dissimilarity measure
  */
-trait KCentersAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D <: Distance[V], GS[X] <: GenSeq[X], +Args <: KCentersArgsAncestor[V, D], +Model <: KCentersModelAncestor[ID, O, V, Cz, D, GS, Args]] extends KCommons[V] with ClusteringAlgorithmLocal[ID, O, V, Cz, GS, Args, Model] {
-	/**
-	 *
-	 */
-	val args: Args
-	/**
-	 *
-	 */
-	protected implicit val ct: ClassTag[Cz[ID, O, V]]
+trait KCentersAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D <: Distance[V], GS[X] <: GenSeq[X], +CA <: KCentersArgsAncestor[V, D], +CM <: KCentersModelAncestor[ID, O, V, Cz, D, GS, CA]] extends KCommons[V] with ClusteringAlgorithmLocal[ID, O, V, Cz, GS, CA, CM] {
 	/**
 	 * Run the K-Centers
 	 */
@@ -75,20 +71,19 @@ trait KCentersAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clus
 		 * KCenters heart in tailrec style
 		 */
 		@annotation.tailrec
-		def go(cpt: Int, allCentersHaveConverged: Boolean, centers: immutable.HashMap[Int, V]): immutable.HashMap[Int, V] = {
-			if(cpt < args.maxIterations && !allCentersHaveConverged) {
-				val centersInfo = data.groupBy( cz => obtainNearestCenterID(cz.v, centers, args.metric) ).map{ case (clusterID, aggregate) =>
-					(clusterID, ClusterBasicOperations.obtainCenter(aggregate.map(_.v), args.metric), aggregate.size)
-				}.toSeq.seq
-
-				val newCenters = immutable.HashMap(centersInfo.map{ case (clusterID, center, _) => (clusterID, center) }:_*)
-				val newCardinalities = immutable.HashMap(centersInfo.map{ case (clusterID, _, cardinality) => (clusterID, cardinality.toLong) }:_*)
-				val (newCentersPruned, newKCentersBeforUpdatePruned) = removeEmptyClusters(newCenters, centers, newCardinalities)
-
-				go(cpt + 1, areCentersMovingEnough(newKCentersBeforUpdatePruned, newCentersPruned, args.epsilon, args.metric), newCentersPruned)
+		def go(cpt: Int, haveAllCentersConverged: Boolean, centers: immutable.HashMap[Int, V]): immutable.HashMap[Int, V] = {
+			val centersInfo = data.groupBy( cz => obtainNearestCenterID(cz.v, centers, args.metric) ).map{ case (clusterID, aggregate) =>
+				(clusterID, ClusterBasicOperations.obtainCenter(aggregate.map(_.v), args.metric), aggregate.size)
+			}.toSeq.seq
+			val newCenters = immutable.HashMap(centersInfo.map{ case (clusterID, center, _) => (clusterID, center) }:_*)
+			val newCardinalities = immutable.HashMap(centersInfo.map{ case (clusterID, _, cardinality) => (clusterID, cardinality.toLong) }:_*)
+			val (newCentersPruned, newKCentersBeforUpdatePruned) = removeEmptyClusters(newCenters, centers, newCardinalities)
+			val shiftingEnough = areCentersNotMovingEnough(newKCentersBeforUpdatePruned, newCentersPruned, args.epsilon, args.metric)
+			if(cpt < args.maxIterations && !shiftingEnough) {
+				go(cpt + 1, shiftingEnough, newCentersPruned)
 			}
 			else {
-				centers
+				newCentersPruned.zipWithIndex.map{ case ((oldClusterID, center), newClusterID) => (newClusterID, center) }
 			}
 		}
 		go(0, false, centers)
@@ -99,8 +94,14 @@ trait KCentersAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clus
 /**
  *
  */
-case class KCenters[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D[X <: GVector[X]] <: Distance[X], GS[X] <: GenSeq[X]](val args: KCentersArgs[V, D])(protected implicit val ct: ClassTag[Cz[ID, O, V]]) extends KCentersAncestor[ID, O, V, Cz, D[V], GS, KCentersArgs[V, D], KCentersModel[ID, O, V, Cz, D, GS]] {
+case class KCenters[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D[X <: GVector[X]] <: Distance[X], GS[X] <: GenSeq[X]](val args: KCentersArgs[V, D]) extends KCentersAncestor[ID, O, V, Cz, D[V], GS, KCentersArgs[V, D], KCentersModel[ID, O, V, Cz, D, GS]] {
+
 	def run(data: GS[Cz[ID, O, V]]): KCentersModel[ID, O, V, Cz, D, GS] = KCentersModel(obtainCenters(data), args.metric, args)
+
+	// def updateArgs(newArgs: KCentersArgs[V, D]): KCenters[ID, O, V, Cz, D, GS] = {
+	// 	newArgs.obtainAlgorithm[ID, O, Cz, GS](None)
+	// }
+
 }
 /**
  * The general KCenters compagnion object helper
@@ -123,7 +124,7 @@ object KCenters {
 		epsilon: Double,
 		maxIterations: Int,
 		initializedCenters: immutable.HashMap[Int, V] = immutable.HashMap.empty[Int, V]
-	)(implicit ct: ClassTag[Cz[ID, O, V]]): KCentersModel[ID, O, V, Cz, D, GS] = {
+	): KCentersModel[ID, O, V, Cz, D, GS] = {
 		(KCenters[ID, O, V, Cz, D, GS](KCentersArgs(k, metric, epsilon, maxIterations, initializedCenters))).run(data)
 	}
 }

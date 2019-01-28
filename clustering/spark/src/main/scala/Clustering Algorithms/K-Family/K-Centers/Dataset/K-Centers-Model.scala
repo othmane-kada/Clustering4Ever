@@ -16,7 +16,7 @@ import org.clustering4ever.clustering.dataset.ClusteringModelDistributedDS
 /**
  *
  */
-trait KCentersModelAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D <: Distance[V], +Args <: KCentersArgsAncestor[V, D]] extends CenterModelDistributedCz[ID, O, V, Cz, D] with ClusteringModelDistributedDS[ID, O, V, Cz, Args] {
+trait KCentersModelAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D <: Distance[V], +CA <: KCentersArgsAncestor[V, D]] extends CenterModelDistributedCz[ID, O, V, Cz, D] with ClusteringModelDistributedDS[ID, O, V, Cz, CA] {
 	/**
 	 * kryo Serialization if true, java one else
 	 */
@@ -25,6 +25,16 @@ trait KCentersModelAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <:
 	 *
 	 */
 	def obtainClustering(data: Dataset[Cz[ID, O, V]]): Dataset[Cz[ID, O, V]] = data.map( cz => cz.addClusterIDs(centerPredict(cz.v)) )(encoder)
+	/**
+	 *
+	 */
+	def prototypesDistancePerPoint(data: Dataset[Cz[ID, O, V]]): Dataset[(Cz[ID, O, V], immutable.HashMap[ClusterID, Double])] = {
+		
+		val speEncoder = if(args.kryoSerialization) Encoders.kryo[(Cz[ID, O, V], immutable.HashMap[ClusterID, Double])] else Encoders.javaSerialization[(Cz[ID, O, V], immutable.HashMap[ClusterID, Double])]
+
+		data.map( cz => (cz, centers.map{ case (clusterID, center) => (clusterID, metric.d(cz.v, center)) } ) )(speEncoder)
+	}
+
 }
 /**
  *

@@ -26,6 +26,10 @@ import org.clustering4ever.clustering.{ClusteringAlgorithm, ClusteringModel, Clu
  */
 trait ClusteringAlgorithmDistributedDS[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], +CA <: ClusteringArgsDistributedDS[V], +CM <: ClusteringModelDistributedDS[ID, O, V, Cz, CA]] extends ClusteringAlgorithm[ID, O, V, Cz, Dataset, CA, CM] {
 	/**
+	 *
+	 */
+	protected implicit val ct: ClassTag[Cz[ID, O, V]]
+	/**
 	 * Execute the corresponding clustering algorithm
 	 * @return GenericClusteringModel
 	 */
@@ -36,6 +40,10 @@ trait ClusteringAlgorithmDistributedDS[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVe
  *
  */
 trait ClusteringModelDistributedDS[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], +CA <: ClusteringArgsDistributedDS[V]] extends ClusteringModel[ID, O, V, Cz, Dataset, CA] {
+	/**
+	 *
+	 */
+	protected implicit val ct: ClassTag[Cz[ID, O, V]]
 	/**
 	 * kryo Serialization if true, java one else
 	 */

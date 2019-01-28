@@ -26,6 +26,10 @@ import org.clustering4ever.clustering.{ClusteringAlgorithm, ClusteringModel, Clu
  */
 trait ClusteringAlgorithmDistributed[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], +CA <: ClusteringArgsDistributed[V], +CM <: ClusteringModelDistributed[ID, O, V, Cz, CA]] extends ClusteringAlgorithm[ID, O, V, Cz, RDD, CA, CM] {
 	/**
+	 *
+	 */
+	protected implicit val ct: ClassTag[Cz[ID, O, V]]
+	/**
 	 * Execute the corresponding clustering algorithm
 	 * @return ClusteringModel
 	 */
@@ -36,6 +40,10 @@ trait ClusteringAlgorithmDistributed[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVect
  *
  */
 trait ClusteringModelDistributed[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], +CA <: ClusteringArgsDistributed[V]] extends ClusteringModel[ID, O, V, Cz, RDD, CA] {
+	/**
+	 *
+	 */
+	protected implicit val ct: ClassTag[Cz[ID, O, V]]
 	/**
 	 * @return a RDD of clusterIDs 
 	 */
@@ -50,7 +58,7 @@ trait ClusteringArgsDistributed[V <: GVector[V]] extends ClusteringArgs[V] {
 	/**
 	 * @return the corresponding algorithm with given arguments to run on data
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz]](data: RDD[Cz[ID, O, V]])(implicit ct: ClassTag[Cz[ID, O, V]]): ClusteringAlgorithmDistributed[ID, O, V, Cz, ClusteringArgsDistributed[V], ClusteringModelDistributed[ID, O, V, Cz, ClusteringArgsDistributed[V]]]
+	def obtainAlgorithm[ID: ClassTag, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz]](data: RDD[Cz[ID, O, V]])(implicit ord: Ordering[ID], ct: ClassTag[Cz[ID, O, V]]): ClusteringAlgorithmDistributed[ID, O, V, Cz, ClusteringArgsDistributed[V], ClusteringModelDistributed[ID, O, V, Cz, ClusteringArgsDistributed[V]]]
 }
 /**
  *

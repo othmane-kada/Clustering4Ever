@@ -16,11 +16,18 @@ import org.clustering4ever.clustering.rdd.ClusteringModelDistributed
 /**
  *
  */
-trait KCentersModelAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D <: Distance[V], +Args <: KCentersArgsAncestor[V, D]] extends CenterModelDistributedCz[ID, O, V, Cz, D] with ClusteringModelDistributed[ID, O, V, Cz, Args] {
+trait KCentersModelAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D <: Distance[V], +CA <: KCentersArgsAncestor[V, D]] extends CenterModelDistributedCz[ID, O, V, Cz, D] with ClusteringModelDistributed[ID, O, V, Cz, CA] {
 	/**
 	 *
 	 */
 	def obtainClustering(data: RDD[Cz[ID, O, V]]): RDD[Cz[ID, O, V]] = centerPredictCz(data)
+	/**
+	 *
+	 */
+	def prototypesDistancePerPoint(data: RDD[Cz[ID, O, V]]): RDD[(Cz[ID, O, V], immutable.HashMap[ClusterID, Double])] = {
+		data.map( cz => (cz, centers.map{ case (clusterID, center) => (clusterID, metric.d(cz.v, center)) } ) )
+	}
+
 }
 /**
  *

@@ -15,7 +15,13 @@ import org.clustering4ever.vectors.GVector
  */
 object KPPInitializer extends Serializable {
 	/**
-	 * K++ initialization
+	 * Kmeans++ initialization
+	 * <h2>References</h2>
+	 * <ol>
+	 * <li> Tapas Kanungo, David M. Mount, Nathan S. Netanyahu, Christine D. Piatko, Ruth Silverman, and Angela Y. Wu. An Efficient k-Means Clustering Algorithm: Analysis and Implementation. IEEE TRANS. PAMI, 2002.</li>
+	 * <li> D. Arthur and S. Vassilvitskii. "K-means++: the advantages of careful seeding". ACM-SIAM symposium on Discrete algorithms, 1027-1035, 2007.</li>
+	 * <li> Anna D. Peterson, Arka P. Ghosh and Ranjan Maitra. A systematic evaluation of different methods for initializing the K-means clustering algorithm. 2010.</li>
+	 * </ol>
 	 */
 	def kppInit[
 		ID,

@@ -20,10 +20,6 @@ trait ClusteringModel[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clust
 	/**
 	 *
 	 */
-	protected implicit val ct: ClassTag[Cz[ID, O, V]]
-	/**
-	 *
-	 */
 	val args: CA
 	/**
 	 * General methods to obtain a clustering from the model in order to measure performances scores

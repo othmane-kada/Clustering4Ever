@@ -15,8 +15,9 @@ import org.clustering4ever.clustering.kcenters.scala.KCenters
 import org.clustering4ever.clustering.{ClusteringChaining, ClusteringAlgorithm, ClusteringAlgorithmLocal, ClusteringInformationsLocal}
 import org.clustering4ever.types.VectorizationIDTypes._
 import org.clustering4ever.types.ClusteringInformationTypes._
-import org.clustering4ever.enums.ClusteringAlgorithmNatureEnum
-import org.clustering4ever.enums.ClusteringAlgorithmNatureEnum._
+import org.clustering4ever.enums.ClusteringIndices
+import org.clustering4ever.enums.ExternalsIndices._
+import org.clustering4ever.enums.InternalsIndices._
 import org.clustering4ever.vectors.{GVector, ScalarVector, BinaryVector, MixtVector}
 import org.clustering4ever.vectorizations.{VectorizationLocal, EasyVectorizationLocal}
 /**
@@ -127,6 +128,28 @@ case class ClusteringChainingLocal[
             }).runAlgorithm(alg)
 
         }.reduce(_.fusionChainable(_))
+
+    }
+    /**
+     * Does nothing for the moment, please be patient, better, help us :)
+     * Optimize hyperparameter for a given algorithm probably using Bayensian Optimization
+     */
+    def optimizeHyperparametersViaInternalIndices[
+        CA <: ClusteringArgsLocal[V],
+        CM <: ClusteringModelLocal[ID, O, V, Cz, GS, CA],
+        Algo <: ClusteringAlgorithmLocal[ID, O, V, Cz, GS, CA, CM]
+    ](algorithms: Algo, metrics: Distance[V])(ci: InternalsIndicesType*) = {
+
+    }
+    /**
+     * Does nothing for the moment, please be patient, better, help us :)
+     * Optimize hyperparameter for a given algorithm probably using Bayensian Optimization
+     */
+    def optimizeHyperparametersViaExternalIndices[
+        CA <: ClusteringArgsLocal[V],
+        CM <: ClusteringModelLocal[ID, O, V, Cz, GS, CA],
+        Algo <: ClusteringAlgorithmLocal[ID, O, V, Cz, GS, CA, CM]
+    ](algorithms: Algo, gt: GS[ClusterID], ci: ExternalsIndicesType*) = {
 
     }
     /**

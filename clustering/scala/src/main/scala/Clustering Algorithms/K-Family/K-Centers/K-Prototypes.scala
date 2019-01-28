@@ -14,9 +14,14 @@ import org.clustering4ever.vectors.{GVector, MixtVector}
 /**
  *
  */
-case class KPrototypes[ID, O, Vb <: Seq[Int], Vs <: Seq[Double], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D[X <: Seq[Int], Y <: Seq[Double]] <: MixtDistance[X, Y], GS[X] <: GenSeq[X]](val args: KPrototypesArgs[Vb, Vs, D])(protected implicit val ct: ClassTag[Cz[ID, O, MixtVector[Vb, Vs]]]) extends KCentersAncestor[ID, O, MixtVector[Vb, Vs], Cz, D[Vb, Vs], GS, KPrototypesArgs[Vb, Vs, D], KPrototypesModel[ID, O, Vb, Vs, Cz, D, GS]] {
+case class KPrototypes[ID, O, Vb <: Seq[Int], Vs <: Seq[Double], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D[X <: Seq[Int], Y <: Seq[Double]] <: MixtDistance[X, Y], GS[X] <: GenSeq[X]](val args: KPrototypesArgs[Vb, Vs, D]) extends KCentersAncestor[ID, O, MixtVector[Vb, Vs], Cz, D[Vb, Vs], GS, KPrototypesArgs[Vb, Vs, D], KPrototypesModel[ID, O, Vb, Vs, Cz, D, GS]] {
 
-	def run(data: GS[Cz[ID, O, MixtVector[Vb, Vs]]]): KPrototypesModel[ID, O, Vb, Vs, Cz, D, GS] = new KPrototypesModel(obtainCenters(data), args.metric, args)
+	def run(data: GS[Cz[ID, O, MixtVector[Vb, Vs]]]): KPrototypesModel[ID, O, Vb, Vs, Cz, D, GS] = KPrototypesModel(obtainCenters(data), args.metric, args)
+
+	// def updateArgs(newArgs: KPrototypesArgs[Vb, Vs, D]): KPrototypes[ID, O, Vb, Vs, Cz, D, GS] = {
+	// 	newArgs.obtainAlgorithm[ID, O, Cz, GS](None)
+	// }
+
 }
 /**
  * The famous K-Prototypes using a user-defined dissmilarity measure.
@@ -37,7 +42,7 @@ object KPrototypes {
 		maxIterations: Int,
 		epsilon: Double,
 		initializedCenters: immutable.HashMap[Int, MixtVector[Vb, Vs]] = immutable.HashMap.empty[Int, MixtVector[Vb, Vs]]
-	)(implicit ct: ClassTag[Cz[ID, O, MixtVector[Vb, Vs]]]): KPrototypesModel[ID, O, Vb, Vs, Cz, D, GS] = {
+	): KPrototypesModel[ID, O, Vb, Vs, Cz, D, GS] = {
 		
 		val kPrototypesAlgorithm = new KPrototypes[ID, O, Vb, Vs, Cz, D, GS](KPrototypesArgs(k, metric, epsilon, maxIterations, initializedCenters))
 		kPrototypesAlgorithm.run(data)

@@ -58,7 +58,7 @@ trait KCommonsSpark[V <: GVector[V]] extends KCommons[V] {
 /**
  *
  */
-trait KCentersAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D <: Distance[V], +Args <: KCentersArgsAncestor[V, D], +Model <: KCentersModelAncestor[ID, O, V, Cz, D, Args]] extends KCommonsSpark[V] with ClusteringAlgorithmDistributed[ID, O, V, Cz, Args, Model] {
+trait KCentersAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D <: Distance[V], +CA <: KCentersArgsAncestor[V, D], +CM <: KCentersModelAncestor[ID, O, V, Cz, D, CA]] extends KCommonsSpark[V] with ClusteringAlgorithmDistributed[ID, O, V, Cz, CA, CM] {
 	/**
 	 *
 	 */
@@ -71,21 +71,20 @@ trait KCentersAncestor[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clus
 		 * KCenters heart in tailrec style
 		 */
 		@annotation.tailrec
-		def go(cpt: Int, allCentersHaveConverged: Boolean, centers: immutable.HashMap[Int, V]): immutable.HashMap[Int, V] = {
-			if(cpt < args.maxIterations && !allCentersHaveConverged) {
-				val centersInfo = data.map( cz => (obtainNearestCenterID(cz.v, centers, args.metric), (1L, cz.v)) )
-					.reduceByKeyLocally{ case ((card1, v1), (card2, v2)) => ((card1 + card2), ClusterBasicOperations.obtainCenter(Seq(v1, v2), args.metric)) }
-					.map{ case (clusterID, (cardinality, center)) => (clusterID, center, cardinality) }
-					.toArray
-
-				val newCenters = immutable.HashMap(centersInfo.map{ case (clusterID, center, _) => (clusterID, center) }:_*)
-				val newCardinalities = immutable.HashMap(centersInfo.map{ case (clusterID, _, cardinality) => (clusterID, cardinality) }:_*)
-				val (newCentersPruned, newKCentersBeforUpdatePruned) = removeEmptyClusters(newCenters, centers, newCardinalities)
-
-				go(cpt + 1, areCentersMovingEnough(newKCentersBeforUpdatePruned, newCentersPruned, args.epsilon, args.metric), newCentersPruned)
+		def go(cpt: Int, haveAllCentersConverged: Boolean, centers: immutable.HashMap[Int, V]): immutable.HashMap[Int, V] = {
+			val centersInfo = data.map( cz => (obtainNearestCenterID(cz.v, centers, args.metric), (1L, cz.v)) )
+				.reduceByKeyLocally{ case ((card1, v1), (card2, v2)) => ((card1 + card2), ClusterBasicOperations.obtainCenter(Seq(v1, v2), args.metric)) }
+				.map{ case (clusterID, (cardinality, center)) => (clusterID, center, cardinality) }
+				.toArray
+			val newCenters = immutable.HashMap(centersInfo.map{ case (clusterID, center, _) => (clusterID, center) }:_*)
+			val newCardinalities = immutable.HashMap(centersInfo.map{ case (clusterID, _, cardinality) => (clusterID, cardinality) }:_*)
+			val (newCentersPruned, newKCentersBeforUpdatePruned) = removeEmptyClusters(newCenters, centers, newCardinalities)
+			val shiftingEnough = areCentersNotMovingEnough(newKCentersBeforUpdatePruned, newCentersPruned, args.epsilon, args.metric)
+			if(cpt < args.maxIterations && !shiftingEnough) {
+				go(cpt + 1, shiftingEnough, newCentersPruned)
 			}
 			else {
-				centers
+				centers.zipWithIndex.map{ case ((oldClusterID, center), newClusterID) => (newClusterID, center) }
 			}
 		}
 		go(0, false, centers)

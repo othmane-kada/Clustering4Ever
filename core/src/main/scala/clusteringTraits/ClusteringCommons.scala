@@ -60,9 +60,9 @@ trait ClusteringAlgorithm[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: C
 	/**
 	 *
 	 */
-	protected implicit val ct: ClassTag[Cz[ID, O, V]]
+	// protected implicit val ct: ClassTag[Cz[ID, O, V]]
 	/**
-	 *
+	 * Arguments used for this algorithm
 	 */
 	val args: CA
 	/**
@@ -70,6 +70,12 @@ trait ClusteringAlgorithm[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: C
 	 * @return GenericClusteringModel
 	 */
 	def run(data: Collection[Cz[ID, O, V]]): CM
+	/**
+	 * Generate a new object of this Algorithm with updated arguments
+	 * Used for hyperparameters optimization
+	 */
+	// def updateArgs(newArgs: CArgs): ClusteringAlgorithm[ID, O, V, Cz, Collection, CArgs, CM]
+	// def updateArgs(newArgs: ClusteringArgs[V]): ClusteringAlgorithm[ID, O, V, Cz, Collection, ClusteringArgs[V], CM]
 
 }
 /**
@@ -83,7 +89,7 @@ trait ClusteringArgsLocal[V <: GVector[V]] extends ClusteringArgs[V] {
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: GS[Cz[ID, O, V]])(implicit ct: ClassTag[Cz[ID, O, V]]): ClusteringAlgorithmLocal[ID, O, V, Cz, GS, ClusteringArgsLocal[V], ClusteringModelLocal[ID, O, V, Cz, GS, ClusteringArgsLocal[V]]]
+	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: Option[GS[Cz[ID, O, V]]] = None): ClusteringAlgorithmLocal[ID, O, V, Cz, GS, ClusteringArgsLocal[V], ClusteringModelLocal[ID, O, V, Cz, GS, ClusteringArgsLocal[V]]]
 
 }
 /**
@@ -115,10 +121,15 @@ trait AlgorithmsRestrictions[ID, O,	V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <
 /**
  *
  */
-// trait ClusteringInformations[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], Collection[_]] extends CollectionNature[Collection] {
-// 	val clusteringInformations: immutable.HashSet[(ClusteringRunNumber, Vectorization[O, V], ClusteringArgs[V], ClusteringModel[ID, O, V, Cz, Collection, ClusteringArgs[V]])]
-// 	val internalsIndicesByClusteringNumberMetricVectorizationIDIndex: immutable.Map[(ClusteringRunNumber, MetricID, VectorizationID, InternalsIndicesType), Double]
-// 	val externalsIndicesByClusteringNumberVectorizationIDIndex: immutable.Map[(ClusteringRunNumber, VectorizationID, ExternalsIndicesType), Double]
+// trait ClusteringInformations[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], Vecto <: Vectorization[O, V, Vecto], Collection[_]] extends CollectionNature[Collection] with ClusteringCommons {
+// 	val clusteringInformations: immutable.HashSet[
+// 		(
+// 			ClusteringRunNumber,
+// 			Vecto,
+// 			ClusteringArgs[V],
+// 			ClusteringModel[ID, O, V, Cz, Collection, ClusteringArgs[V]]
+// 		)
+// 	]
 // }
 /**
  *
@@ -133,6 +144,7 @@ case class ClusteringInformationsLocal[ID, O, V <: GVector[V], Cz[X, Y, Z <: GVe
 		)
 	] = immutable.HashSet.empty[(ClusteringRunNumber, Vecto, ClusteringArgsLocal[V], ClusteringModelLocal[ID, O, V, Cz, GS, ClusteringArgsLocal[V]])]
 ) extends ClusteringCommons
+// ) extends ClusteringInformations[ID, O, V, Cz, Vecto, GS]
 /**
  *
  */

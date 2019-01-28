@@ -13,9 +13,14 @@ import org.clustering4ever.vectors.{GVector, BinaryVector}
 /**
  *
  */
-case class KModes[ID, O, V <: Seq[Int], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D[X <: Seq[Int]] <: BinaryDistance[X], GS[X] <: GenSeq[X]](val args: KModesArgs[V, D])(protected implicit val ct: ClassTag[Cz[ID, O, BinaryVector[V]]]) extends KCentersAncestor[ID, O, BinaryVector[V], Cz, D[V], GS, KModesArgs[V, D], KModesModel[ID, O, V, Cz, D, GS]] {
+case class KModes[ID, O, V <: Seq[Int], Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], D[X <: Seq[Int]] <: BinaryDistance[X], GS[X] <: GenSeq[X]](val args: KModesArgs[V, D]) extends KCentersAncestor[ID, O, BinaryVector[V], Cz, D[V], GS, KModesArgs[V, D], KModesModel[ID, O, V, Cz, D, GS]] {
 
 	def run(data: GS[Cz[ID, O, BinaryVector[V]]]): KModesModel[ID, O, V, Cz, D, GS] = new KModesModel(obtainCenters(data), args.metric, args)
+
+	// def updateArgs(newArgs: KModesArgs[V, D]): KModes[ID, O, V, Cz, D, GS] = {
+	// 	newArgs.obtainAlgorithm[ID, O, Cz, GS](None)
+	// }
+
 }
 /**
  *
@@ -48,7 +53,7 @@ object KModes {
 		maxIterations: Int,
 		epsilon: Double,
 		initializedCenters: immutable.HashMap[Int, BinaryVector[V]] = immutable.HashMap.empty[Int, BinaryVector[V]]
-	)(implicit ct: ClassTag[Cz[ID, O, BinaryVector[V]]]): KModesModel[ID, O, V, Cz, D, GS] = {
+	): KModesModel[ID, O, V, Cz, D, GS] = {
 		
 		val kmodesAlgorithm = new KModes[ID, O, V, Cz, D, GS](KModesArgs(k, metric, epsilon, maxIterations, initializedCenters))
 		kmodesAlgorithm.run(data)

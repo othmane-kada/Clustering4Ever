@@ -36,7 +36,7 @@ case class RLAArgs[V <: GVector[V], D[X <: GVector[X]] <: Distance[X]](val metri
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: GS[Cz[ID, O, V]])(implicit ct: ClassTag[Cz[ID, O, V]]): RLA[ID, O, V, Cz, D, GS] = {
+	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: Option[GS[Cz[ID, O, V]]] = None): RLA[ID, O, V, Cz, D, GS] = {
 		RLA[ID, O, V, Cz, D, GS](this)
 	}
 }
@@ -47,7 +47,7 @@ case class RLAArgsScalar[V <: Seq[Double], D[X <: Seq[Double]] <: ContinuousDist
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: GS[Cz[ID, O, ScalarVector[V]]])(implicit ct: ClassTag[Cz[ID, O, ScalarVector[V]]]): RLAScalar[ID, O, V, Cz, D, GS] = {
+	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: Option[GS[Cz[ID, O, ScalarVector[V]]]] = None): RLAScalar[ID, O, V, Cz, D, GS] = {
 		RLAScalar[ID, O, V, Cz, D, GS](this)
 	}
 }
@@ -58,7 +58,7 @@ case class RLAArgsBinary[V <: Seq[Int], D[X <: Seq[Int]] <: BinaryDistance[X]](v
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: GS[Cz[ID, O, BinaryVector[V]]])(implicit ct: ClassTag[Cz[ID, O, BinaryVector[V]]]): RLABinary[ID, O, V, Cz, D, GS] = {
+	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: Option[GS[Cz[ID, O, BinaryVector[V]]]] = None): RLABinary[ID, O, V, Cz, D, GS] = {
 		RLABinary[ID, O, V, Cz, D, GS](this)
 	}
 }
@@ -69,7 +69,7 @@ case class RLAArgsMixt[Vb <: Seq[Int], Vs <: Seq[Double], D[X <: Seq[Int], Y <: 
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: GS[Cz[ID, O, MixtVector[Vb, Vs]]])(implicit ct: ClassTag[Cz[ID, O, MixtVector[Vb, Vs]]]): RLAMixt[ID, O, Vb, Vs, Cz, D, GS] = {
+	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: Option[GS[Cz[ID, O, MixtVector[Vb, Vs]]]] = None): RLAMixt[ID, O, Vb, Vs, Cz, D, GS] = {
 		RLAMixt[ID, O, Vb, Vs, Cz, D, GS](this)
 	}
 }

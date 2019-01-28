@@ -59,7 +59,7 @@ case class KCentersArgs[V <: GVector[V] : ClassTag, D[X <: GVector[X]] <: Distan
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz]](data: RDD[Cz[ID, O, V]])(implicit ct: ClassTag[Cz[ID, O, V]]): KCenters[ID, O, V, Cz, D] = {
+	def obtainAlgorithm[ID: ClassTag, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz]](data: RDD[Cz[ID, O, V]])(implicit ord: Ordering[ID], ct: ClassTag[Cz[ID, O, V]]): KCenters[ID, O, V, Cz, D] = {
 		KCenters[ID, O, V, Cz, D](this)
 	}
 }
@@ -72,7 +72,7 @@ case class KMeansArgs[V <: Seq[Double], D[X <: Seq[Double]] <: ContinuousDistanc
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz]](data: RDD[Cz[ID, O, ScalarVector[V]]])(implicit ct: ClassTag[Cz[ID, O, ScalarVector[V]]]): KMeans[ID, O, V, Cz, D] = {
+	def obtainAlgorithm[ID: ClassTag, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz]](data: RDD[Cz[ID, O, ScalarVector[V]]])(implicit ord: Ordering[ID], ct: ClassTag[Cz[ID, O, ScalarVector[V]]]): KMeans[ID, O, V, Cz, D] = {
 		KMeans[ID, O, V, Cz, D](this)
 	}
 }
@@ -85,7 +85,7 @@ case class KModesArgs[V <: Seq[Int], D[X <: Seq[Int]] <: BinaryDistance[X]](val 
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz]](data: RDD[Cz[ID, O, BinaryVector[V]]])(implicit ct: ClassTag[Cz[ID, O, BinaryVector[V]]]): KModes[ID, O, V, Cz, D] = {
+	def obtainAlgorithm[ID: ClassTag, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz]](data: RDD[Cz[ID, O, BinaryVector[V]]])(implicit ord: Ordering[ID], ct: ClassTag[Cz[ID, O, BinaryVector[V]]]): KModes[ID, O, V, Cz, D] = {
 		KModes[ID, O, V, Cz, D](this)
 	}
 }
@@ -98,7 +98,7 @@ case class KPrototypesArgs[Vb <: Seq[Int], Vs <: Seq[Double], D[X <: Seq[Int], Y
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz]](data: RDD[Cz[ID, O, MixtVector[Vb, Vs]]])(implicit ct: ClassTag[Cz[ID, O, MixtVector[Vb, Vs]]]): KPrototypes[ID, O, Vb, Vs, Cz, D] = {
+	def obtainAlgorithm[ID: ClassTag, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz]](data: RDD[Cz[ID, O, MixtVector[Vb, Vs]]])(implicit ord: Ordering[ID], ct: ClassTag[Cz[ID, O, MixtVector[Vb, Vs]]]): KPrototypes[ID, O, Vb, Vs, Cz, D] = {
 		KPrototypes[ID, O, Vb, Vs, Cz, D](this)
 	}
 

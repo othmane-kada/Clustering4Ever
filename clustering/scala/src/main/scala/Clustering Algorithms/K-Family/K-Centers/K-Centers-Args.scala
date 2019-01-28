@@ -46,7 +46,7 @@ case class KCentersArgs[V <: GVector[V], D[X <: GVector[X]] <: Distance[X]](val 
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: GS[Cz[ID, O, V]])(implicit ct: ClassTag[Cz[ID, O, V]]): KCenters[ID, O, V, Cz, D, GS] = {
+	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: Option[GS[Cz[ID, O, V]]] = None): KCenters[ID, O, V, Cz, D, GS] = {
 		KCenters[ID, O, V, Cz, D, GS](this)
 	}
 }
@@ -59,7 +59,7 @@ case class KMeansArgs[V <: Seq[Double], D[X <: Seq[Double]] <: ContinuousDistanc
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: GS[Cz[ID, O, ScalarVector[V]]])(implicit ct: ClassTag[Cz[ID, O, ScalarVector[V]]]): KMeans[ID, O, V, Cz, D, GS] = {
+	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: Option[GS[Cz[ID, O, ScalarVector[V]]]] = None): KMeans[ID, O, V, Cz, D, GS] = {
 		KMeans[ID, O, V, Cz, D, GS](this)
 	}
 
@@ -75,7 +75,7 @@ case class KModesArgs[V <: Seq[Int], D[X <: Seq[Int]] <: BinaryDistance[X]](val 
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: GS[Cz[ID, O, BinaryVector[V]]])(implicit ct: ClassTag[Cz[ID, O, BinaryVector[V]]]): KModes[ID, O, V, Cz, D, GS] = {
+	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: Option[GS[Cz[ID, O, BinaryVector[V]]]] = None): KModes[ID, O, V, Cz, D, GS] = {
 		KModes[ID, O, V, Cz, D, GS](this)
 	}
 }
@@ -88,7 +88,7 @@ case class KPrototypesArgs[Vb <: Seq[Int], Vs <: Seq[Double], D[X <: Seq[Int], Y
 	/**
 	 *
 	 */
-	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: GS[Cz[ID, O, MixtVector[Vb, Vs]]])(implicit ct: ClassTag[Cz[ID, O, MixtVector[Vb, Vs]]]): KPrototypes[ID, O, Vb, Vs, Cz, D, GS] = {
+	def obtainAlgorithm[ID, O, Cz[X, Y, Z <: GVector[Z]] <: Clusterizable[X, Y, Z, Cz], GS[X] <: GenSeq[X]](data: Option[GS[Cz[ID, O, MixtVector[Vb, Vs]]]] = None): KPrototypes[ID, O, Vb, Vs, Cz, D, GS] = {
 		KPrototypes[ID, O, Vb, Vs, Cz, D, GS](this)
 	}
 }
