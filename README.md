@@ -51,7 +51,7 @@ Algorithm followed with a * implement _ClusteringAlgorithm_ trait and can be run
 
 ### Preprocessing
 
-* _Gradient Ascent_ (for mean-shift algorithm)
+* _Gradient Ascent_ (for mean-shift clustering algorithm)
 * **_Rough Set Features Selection_**
 
 ### Quality Indices
