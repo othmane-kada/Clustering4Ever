@@ -38,7 +38,7 @@ You can also take [specifics parts](https://bintray.com/clustering4ever/C4E) :
 * **PatchWork** ([Original project](https://github.com/crim-ca/patchwork))
 * _Random Local Area_ *
 * **Clusterwize** 
-* _Tensor Biclustering algorithms_ ([Original project]((https://github.com/SoheilFeizi/Tensor-Biclustering))
+* _Tensor Biclustering algorithms_ ([Original project](https://github.com/SoheilFeizi/Tensor-Biclustering))
   * _Folding-Spectral_
   * _Unfolding-Spectral_
   * _Thresholding Sum Of Squared Trajectory Length_
@@ -48,6 +48,11 @@ You can also take [specifics parts](https://bintray.com/clustering4ever/C4E) :
 
 
 Algorithm followed with a * implement _ClusteringAlgorithm_ trait and can be run by benchmarking classes.
+
+### Preprocessing
+
+* _Gradient Ascent_ (for mean-shift algorithm)
+* **_Rough Set Features Selection_**
 
 ### Quality Indices
 
@@ -61,10 +66,6 @@ Classes _ClustersIndicesAnalysisLocal_ and _ClustersIndicesAnalysisDistributed_ 
   * **_Ball Hall_**
   * _Silhouette_
 
-### Preprocessing
-
-* _Gradient Ascent_
-* **_Rough Set Features Selection_**
 
 ### Clustering benchmarking and analysis
 
